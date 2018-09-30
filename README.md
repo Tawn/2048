@@ -1,2 +1,2 @@
 # 2048
-Game of 2048 using 2D Arrays
+Game of 2048 with MVC Design

@@ -38,11 +38,12 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 	private JButton reset, quit;
 	private JLabel highScore, validMoves, end, move;
 	private JPanel controlPanel, boardPanel, labelPanel, buttonPanel;
-	private boolean play;
+	private boolean play, quitGame, restartGame;
 	
 	// Constructor
 	public Game() {
-		
+		quitGame = false;
+		restartGame = false;
 		play = true;
 		
 		// Main Panel Layout 
@@ -174,7 +175,28 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 	// Player Key Press
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if(play) {
+		
+		// Restart/Quit Option
+		if(e.getKeyCode() == KeyEvent.VK_R || e.getKeyCode() == KeyEvent.VK_Q) {
+	 		int key = e.getKeyCode();
+			switch(key) {
+				case KeyEvent.VK_R:
+					if(!restartGame) {
+						restartGame = true;
+						quitGame = false;
+						System.out.println("Press (R) to confirm");
+					} else
+						restart();
+					break;
+				case KeyEvent.VK_Q:
+					if(!quitGame) {
+						quitGame = true;
+						restartGame = false;
+						System.out.println("Press (Q) to confirm"); 
+					} else 
+						quit();
+			}
+		} else if (play){
 	 		int key = e.getKeyCode();
 			switch(key) {
 				case KeyEvent.VK_UP:
@@ -192,12 +214,14 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 				default:
 					break;
 			}
+			restartGame = false;
+			quitGame = false;
+			reset.setText("New Game");
 			quit.setText("Quit");
 			board.printBoard();
 			updateScore();
 			updateMoves();
 			updateBoard();
-			System.out.println(board.getScore());
 			
 			if(board.checkGameOver() == true) {
 				play = false;
@@ -207,12 +231,9 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 				move.setText("Invalid Move!");
 				
 			} else {
-				
-				System.out.println("true");
 				move.setText("Valid Move!");
 				
-			}
-			
+			} 
 		}
 	}
 	
@@ -226,39 +247,56 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		
 		// Reset Clicked
-		if(e.getSource() == reset) {
-			play = true;
+		if(e.getSource() == reset && reset.getText() == "New Game") {
+			reset.setText("Are you sure?");
 			quit.setText("Quit");
-			this.remove(boardPanel);
-			this.remove(controlPanel);
-			setBoard();
-			setControl();
+			
+		} else if(e.getSource() == reset && reset.getText() == "Are you sure?") {
+			restart();
 			
 		// Quit Clicked
 		} else if(e.getSource() == quit && quit.getText() == "Quit") {
 			quit.setText("Are you sure?");
+			reset.setText("New Game");
 			
 		// Remove Board panel
 		} else if(e.getSource() == quit && quit.getText().equals("Are you sure?")) {
-			play = false;
-			System.out.println("Quitting");
-			
-			// Remove all panels from main
-			this.removeAll();			
-			
-			// Add goodbye
-			labelPanel.setLayout(new GridLayout(4,1));
-			end = new JLabel("Thanks for playing!", SwingConstants.CENTER);
-			labelPanel.add(end);
-			
-			// Add new labelPanel to main
-			this.add(labelPanel, BorderLayout.CENTER);
-		
-			// Display - this somehow procs the repaints, discovered by myself. 
-			validMoves.setText("Valid Moves: " + board.getMoves() + " ");
+			quit();
 
 
 		}
+	}
+	
+	public void restart() {
+		play = true;
+		quit.setText("Quit");
+		reset.setText("New Game");
+		this.remove(boardPanel);
+		this.remove(controlPanel);
+		setBoard();
+		setControl();
+		
+	}
+	
+	public void quit() {
+		play = false;
+		reset.setText("New Game");
+		
+		// Remove all panels from main
+		this.removeAll();			
+		
+		// Add goodbye
+		labelPanel.setLayout(new GridLayout(4,1));
+		end = new JLabel("Thanks for playing!", SwingConstants.CENTER);
+		labelPanel.add(end);
+		
+		// Add new labelPanel to main
+		this.add(labelPanel, BorderLayout.CENTER);
+	
+		// Display - this somehow procs the repaints, discovered by myself. 
+		validMoves.setText("Valid Moves: " + board.getMoves() + " ");
+		
+		System.out.println("Thanks for Playing!");
 	}
 
 

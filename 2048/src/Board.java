@@ -14,7 +14,7 @@ public class Board {
 	// Constructor
 	public Board() {
 		board = new int[dimension][dimension];
-		highScore = 0; validMoves = 0;
+		highScore = 0; validMoves = -1;
 		endGame = false;
 		update();
 		printBoard();
@@ -104,15 +104,72 @@ public class Board {
 	}
 	
 	public void printBoard() {
+		int [] temp = new int[dimension]; // For console print
+		
+		for(int i = 0; i < dimension; i ++) {
+			for(int j = 0; j < dimension; j++) {
+				
+				int size = Integer.toString(board[i][j]).length();
+				if(size == 0) size = 1;
+				int set = temp[j];				
+				if(set < size)
+					temp[j] = Integer.toString(board[i][j]).length();
+			}
+		}
+		
+		/** Print out board **/
+		// Top Line
+		System.out.print("\n+");
+		for(int i = 0; i < dimension; i++) 
+			for(int j = 0; j < temp[i] + 1; j++)
+				System.out.print("-");
+		
+		System.out.print("-");
+		System.out.print("+\n");
+				
+		// Board
 		for(int i = 0; i < dimension; i++) {
 			System.out.print("| ");
-			for(int j = 0; j < dimension; j++) {
-				System.out.print(board[i][j] + " ");
+			for(int j = 0; j < dimension; j++) {		
+				System.out.print(board[i][j]);
+				
+				// Print spaces
+				int spaces = temp[j] - Integer.toString(board[i][j]).length() + 1;
+				
+				for(int space = 0; space < spaces; space++) 
+					System.out.print(" ");
 			}
 			System.out.println("|");
 		}
-		System.out.println();
+		
+		// Bottom Line
+		System.out.print("+");
+		for(int i = 0; i < dimension; i++) 
+			for(int j = 0; j < temp[i] + 1; j++)
+				System.out.print("-");
+	
+		System.out.print("-");
+		System.out.print("+\n");
+		
+		// Print Score
+		System.out.println("Score: " + getScore() + " | Valid Moves: " + getMoves());
+		
+		// Print Valid Moves
+		if(validMoves > 0 && !endGame) {
+			if(validPlay)
+				System.out.println("Valid Move");
+			else 
+				System.out.println("Invalid Move");
+		}
+		
+		if(endGame) {
+			System.out.println("Game Over");
+		}
+			// Controls:
+			System.out.println("Press: (R)eset, (Q)uit, (Arrow keys) Moves");
+			
 	}
+	
 
 	/** MOVE UP **/
 	public void moveUp() {
@@ -154,7 +211,6 @@ public class Board {
 		}
 		
 		// Generate new numbers only if move is valid. 
-		System.out.println("Play: " + invalid);
 		if(!invalid) {
 			update();
 		} else { 
@@ -172,7 +228,6 @@ public class Board {
 		for(int row = dimension-1; row > 0; row--) { // from top to bottom
 			for(int i = row-1; i >= 0; i--) { // i in {y2 y1, y0}
 				for(int index = 0; index < dimension; index++) { // from index 0 to 3
-					System.out.println(invalid);
 					// Compare and add
 					if(board[row][index] != 0 && board[row][index] == board[i][index] && added[row][index] == false) { 
 						board[row][index] *= 2; 
@@ -236,7 +291,6 @@ public class Board {
 				}
 			}
 		}
-		System.out.println(invalid);
 
 		// TODO(Shift): Shift Left
 		for(int col = 0; col < dimension-1; col++) {
@@ -283,7 +337,6 @@ public class Board {
 				}
 			}
 		}
-		System.out.println(invalid);
 
 		// TODO(Shift): Shift Right
 		for(int col = dimension-1; col > 0; col--) {
@@ -316,7 +369,6 @@ public class Board {
 			for(int j = 0; j < dimension; j++) {
 				int position = board[i][j];
 				if(position == 0) {
-					System.out.println("Not end of game: 0 exists");
 					return;
 				}
 			}
@@ -335,13 +387,12 @@ public class Board {
 					if(position == board[i][j-1] ||
 					   position == board[i][j+1] ||
 					   position == board[i-1][j] || 
-				       position == board[i+1][j]) { System.out.println("Not end of game"); return; }
+				       position == board[i+1][j]) { return; }
 				}
 				
 				// Top-Left Corner
 				else if(i == 0 && j == 0) {
 					if(position == board[i][j+1] || position == board[i+1][j]) {
-						System.out.println("Not end of game");
 						return;
 					}
 				}
@@ -349,7 +400,6 @@ public class Board {
 				// Top-Right Corner
 				else if(i == 0 && j == dimension-1) {
 					if(position == board[i][j-1] || position == board[i+1][j]) {
-						System.out.println("Not end of game");
 						return;
 					}
 				}
@@ -357,7 +407,6 @@ public class Board {
 				// Bottom-Left Corner
 				else if(i == dimension-1 && j == 0) {
 					if(position == board[i][j+1] || position == board[i-1][j]) {
-						System.out.println("Not end of game");
 						return;
 					} 
 				}
@@ -365,7 +414,6 @@ public class Board {
 				// Bottom-Right Corner
 				else if(i == dimension-1 && j == dimension-1) {
 					if(position == board[i][j-1] || position == board[i-1][j]) {
-						System.out.println("Not end of game");
 						return;
 					}
 				}
@@ -373,7 +421,6 @@ public class Board {
 				// Top-Inner
 				else if(i == 0 && j == 1) {
 					if(position == board[i][j+1]) {
-						System.out.println("Not end of game");
 						return;
 					}
 				} 
@@ -381,7 +428,6 @@ public class Board {
 				// Left-Inner
 				else if(i == 1 && j == 1) {
 					if(position == board[i+1][j]) {
-						System.out.println("Not end of game");
 						return;
 					}
 				} 
@@ -389,7 +435,6 @@ public class Board {
 				// Right-Inner
 				else if(i == 1 && j == dimension-1) {
 					if(position == board[i+1][j]) {
-						System.out.println("Not end of game");
 						return;
 					}
 				} 
@@ -397,7 +442,6 @@ public class Board {
 				// Bottom-Inner
 				else if(i == dimension-1 && j == 1) {
 					if(position == board[i][j+1]) {
-						System.out.println("Not end of game");
 						return;
 					}
 				} 	

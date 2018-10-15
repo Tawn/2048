@@ -38,13 +38,14 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 	private JButton reset, quit;
 	private JLabel highScore, validMoves, end, move;
 	private JPanel controlPanel, boardPanel, labelPanel, buttonPanel;
-	private boolean play, quitGame, restartGame;
+	private boolean play, quitGame, restartGame, done;
 	
 	// Constructor
 	public Game() {
 		quitGame = false;
 		restartGame = false;
 		play = true;
+		done = false;
 		
 		// Main Panel Layout 
 		this.setLayout(new BorderLayout());
@@ -177,7 +178,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 	public void keyPressed(KeyEvent e) {
 		
 		// Restart/Quit Option
-		if(e.getKeyCode() == KeyEvent.VK_R || e.getKeyCode() == KeyEvent.VK_Q) {
+		if((e.getKeyCode() == KeyEvent.VK_R || e.getKeyCode() == KeyEvent.VK_Q) && !done) {
 	 		int key = e.getKeyCode();
 			switch(key) {
 				case KeyEvent.VK_R:
@@ -192,9 +193,11 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 					if(!quitGame) {
 						quitGame = true;
 						restartGame = false;
-						System.out.println("Press (Q) to confirm"); 
-					} else 
+						System.out.println("Press (Q) to confirm");
+					} else {
+						done = true;
 						quit();
+					}
 			}
 		} else if (play){
 	 		int key = e.getKeyCode();
@@ -280,6 +283,7 @@ public class Game extends JPanel implements KeyListener, ActionListener {
 	
 	public void quit() {
 		play = false;
+		done = true;
 		reset.setText("New Game");
 		
 		// Remove all panels from main

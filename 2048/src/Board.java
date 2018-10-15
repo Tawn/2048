@@ -108,7 +108,7 @@ public class Board {
 		
 		for(int i = 0; i < dimension; i ++) {
 			for(int j = 0; j < dimension; j++) {
-				
+				System.out.println(); // Clear screen
 				int size = Integer.toString(board[i][j]).length();
 				if(size == 0) size = 1;
 				int set = temp[j];				
